@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CareerForge</title>
+<style>
+  :root{
+    --bg:#0f1226; --bg2:#151a35; --card:#ffffff; --ink:#1b2138; --muted:#6b7280;
+    --line:#e6e8f0; --brand:#6d5cf5; --brand2:#8b5cf6; --accent:#22c55e;
+    --amber:#f59e0b; --red:#ef4444; --soft:#f6f7fb;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:linear-gradient(160deg,#0f1226,#241a4d 60%,#3b1d63);min-height:100vh}
+  .wrap{max-width:860px;margin:0 auto;padding:28px 18px 80px}
+  header.hero{color:#fff;text-align:center;padding:14px 0 22px}
+  header.hero h1{margin:0;font-size:34px;letter-spacing:-.5px}
+  header.hero h1 .spark{background:linear-gradient(90deg,#a78bfa,#f0abfc);-webkit-background-clip:text;background-clip:text;color:transparent}
+  header.hero p{margin:6px 0 0;color:#c7c9e8;font-size:15px}
+  /* stepper */
+  .steps{display:flex;gap:8px;justify-content:center;margin:18px 0 22px;flex-wrap:wrap}
+  .steps .s{display:flex;align-items:center;gap:8px;color:#b9bce4;font-size:13px;font-weight:600}
+  .steps .dot{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.12);color:#fff;font-size:13px}
+  .steps .s.active .dot{background:#fff;color:var(--brand)}
+  .steps .s.done .dot{background:var(--accent);color:#fff}
+  .steps .bar{width:18px;height:2px;background:rgba(255,255,255,.18);border-radius:2px}
+  /* card */
+  .card{background:var(--card);border-radius:18px;box-shadow:0 20px 50px rgba(10,10,40,.35);padding:26px}
+  h2.section{margin:0 0 4px;font-size:22px}
+  h3.subsection{margin:22px 0 8px;font-size:16px}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 18px}
+  label{display:block;font-weight:600;font-size:14px;margin:14px 0 6px}
+  label .opt{font-weight:500;color:var(--muted);font-size:12px}
+  input[type=text],textarea{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;
+    font:inherit;font-size:14px;background:#fff;color:var(--ink);resize:vertical;transition:border .15s}
+  input[type=text]:focus,textarea:focus{outline:none;border-color:var(--brand)}
+  textarea{min-height:120px}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:20px}
+  button{cursor:pointer;border:none;border-radius:12px;padding:12px 22px;font:inherit;font-weight:700;font-size:15px}
+  .btn{background:linear-gradient(90deg,var(--brand),var(--brand2));color:#fff;box-shadow:0 8px 20px rgba(109,92,245,.35)}
+  .btn:hover{filter:brightness(1.06)}
+  .btn:disabled{opacity:.55;cursor:not-allowed;box-shadow:none}
+  .ghost{background:var(--soft);color:var(--ink)}
+  .link{background:none;color:var(--brand);padding:8px 0;font-weight:600}
+  /* resume input tabs */
+  .tabs{display:flex;gap:6px;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:4px;width:fit-content}
+  .tabs button{padding:8px 16px;font-size:13px;font-weight:600;border-radius:9px;background:none;color:var(--muted)}
+  .tabs button.on{background:#fff;color:var(--brand);box-shadow:0 2px 8px rgba(10,10,40,.08)}
+  .tabpanel{margin-top:12px}
+  /* gap analysis */
+  .callout{background:var(--soft);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:12px;padding:14px 16px;margin:14px 0;font-size:14px;line-height:1.5}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}
+  .chip{font-size:12px;font-weight:600;padding:6px 11px;border-radius:999px;border:1px solid var(--line)}
+  .chip .sev{opacity:.7;font-weight:700}
+  .chip.crit{background:#fef2f2;border-color:#fecaca;color:#b91c1c}
+  .chip.warn{background:#fffbeb;border-color:#fde68a;color:#b45309}
+  .chip.ok{background:#f0fdf4;border-color:#bbf7d0;color:#15803d}
+  .chip.str{background:#eef2ff;border-color:#c7d2fe;color:#4338ca}
+  /* ATS review */
+  .ats-top{display:flex;gap:26px;align-items:center;flex-wrap:wrap;margin:6px 0 8px}
+  .ring{position:relative;width:132px;height:132px;flex:0 0 auto}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .val{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+  .ring .val b{font-size:32px;line-height:1}
+  .ring .val span{font-size:11px;color:var(--muted);font-weight:600}
+  .bars{flex:1;min-width:230px}
+  .brow{display:flex;align-items:center;gap:10px;margin:9px 0}
+  .brow .bl{width:92px;font-size:12.5px;font-weight:600;color:var(--muted)}
+  .brow .bt{flex:1;height:8px;background:var(--line);border-radius:6px;overflow:hidden}
+  .brow .bt i{display:block;height:100%;border-radius:6px;transition:width .5s}
+  .brow .bn{width:34px;text-align:right;font-size:12.5px;font-weight:700}
+  .impv{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:12px 0}
+  .impv .where{font-size:11px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+  .impv .blk{border-radius:10px;padding:10px 12px;font-size:13.5px;line-height:1.5;margin:6px 0}
+  .impv .before{background:#fef2f2;border:1px solid #fecaca}
+  .impv .after{background:#f0fdf4;border:1px solid #bbf7d0}
+  .impv .tag{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:3px}
+  .impv .before .tag{color:#b91c1c}
+  .impv .after .tag{color:#15803d}
+  .impv .why{font-size:12.5px;color:var(--muted);margin-top:8px}
+  .plainlist{margin:8px 0;padding-left:20px;font-size:14px;line-height:1.65}
+  /* question */
+  .qmeta{font-size:12px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.06em}
+  .qtext{font-size:18px;font-weight:600;margin:6px 0 14px;line-height:1.4}
+  .feedback{margin-top:14px;border-radius:12px;padding:12px 14px;font-size:14px;display:none}
+  .feedback.show{display:block}
+  .feedback .score{font-weight:800;font-size:15px}
+  .progress{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin:2px 0 18px}
+  .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand2));width:0;transition:width .4s}
+  /* markdown */
+  .md{font-size:14.5px;line-height:1.6}
+  .md h2{font-size:19px;margin:22px 0 8px;padding-bottom:6px;border-bottom:2px solid var(--line)}
+  .md h3{font-size:16px;margin:16px 0 6px}
+  .md ul{padding-left:20px;margin:8px 0}
+  .md li{margin:4px 0}
+  .md table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+  .md th,.md td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+  .md th{background:var(--soft)}
+  .md a{color:var(--brand)}
+  .md .chk{list-style:none;padding-left:0}
+  .md .chk li{padding-left:26px;position:relative}
+  .md .chk li:before{content:"";position:absolute;left:0;top:2px;width:16px;height:16px;border:2px solid var(--brand);border-radius:5px}
+  /* misc */
+  .banner{display:none;background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:14px}
+  .banner.show{display:block}
+  .spinner{display:none;align-items:center;gap:10px;color:var(--muted);font-size:14px;margin-top:16px}
+  .spinner.show{display:flex}
+  .spinner i{width:18px;height:18px;border:3px solid var(--line);border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .scorecards{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+  .sc{flex:1;min-width:120px;background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+  .sc .n{font-size:26px;font-weight:800}
+  .sc .l{font-size:12px;color:var(--muted);margin-top:2px}
+  .hide{display:none}
+  .drop{border:2px dashed #cdd2e6;border-radius:14px;padding:24px;text-align:center;cursor:pointer;
+    background:var(--soft);transition:border-color .15s,background .15s}
+  .drop:hover,.drop.over{border-color:var(--brand);background:#f2f0ff}
+  .drop .dropicon{font-size:30px;margin-bottom:6px}
+  .drop .dropnote{color:var(--muted);font-size:12px;margin-top:4px}
+  .miniup{margin-top:8px;border:1.5px dashed #cdd2e6;border-radius:10px;padding:9px 12px;font-size:13px;
+    color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:8px;background:var(--soft);
+    transition:border-color .15s,background .15s}
+  .miniup:hover,.miniup.over{border-color:var(--brand);background:#f2f0ff}
+  .miniup b{color:var(--ink)}
+  .resumebox{border:1px solid var(--line);border-radius:14px;padding:20px 22px;background:var(--soft);margin-top:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <h1>Career<span class="spark">Forge</span></h1>
+    <p>Beat the ATS, fix your resume, prove your skills — and get a plan to land the role.</p>
+  </header>
+
+  <div class="steps" id="stepper">
+    <div class="s" data-step="1"><span class="dot">1</span>Profile</div>
+    <div class="bar"></div>
+    <div class="s" data-step="2"><span class="dot">2</span>Resume &amp; ATS</div>
+    <div class="bar"></div>
+    <div class="s" data-step="3"><span class="dot">3</span>Q&amp;A</div>
+    <div class="bar"></div>
+    <div class="s" data-step="4"><span class="dot">4</span>Writing</div>
+    <div class="bar"></div>
+    <div class="s" data-step="5"><span class="dot">5</span>Pathway</div>
+  </div>
+
+  <div class="card">
+    <div id="banner" class="banner"></div>
+
+    <!-- ===== SCREEN 1: SETUP ===== -->
+    <section id="screen-setup">
+      <h2 class="section">Tell us about you</h2>
+      <p class="sub">Add your resume (PDF or typed) and the role you're aiming for. The job posting is optional — paste it or upload its PDF for a sharper ATS check and gap analysis.</p>
+
+      <label for="role">Target role</label>
+      <input type="text" id="role" placeholder="e.g. Machine Learning Engineer" />
+
+      <label for="jd">Job description <span class="opt">(optional — leave blank to be evaluated against typical requirements for the role)</span></label>
+      <textarea id="jd" placeholder="Paste the responsibilities and required skills from the job posting… or leave blank."></textarea>
+      <div class="miniup" id="jdDrop">
+        <input type="file" id="jdFile" accept="application/pdf,.pdf" hidden />
+        <span id="jdDropText">📎 <b>Upload the job posting PDF</b> — or drag &amp; drop it here (fills the box above)</span>
+      </div>
+
+      <label>Your resume</label>
+      <div class="tabs" id="resumeTabs">
+        <button type="button" id="tabUploadBtn" class="on">📄 Upload PDF</button>
+        <button type="button" id="tabPasteBtn">⌨️ Type / paste text</button>
+      </div>
+
+      <div class="tabpanel" id="tab-upload">
+        <div class="drop" id="drop">
+          <input type="file" id="resumeFile" accept="application/pdf,.pdf" hidden />
+          <div id="dropIdle">
+            <div class="dropicon">📄</div>
+            <div><b>Click to upload</b> or drag &amp; drop your resume PDF</div>
+            <div class="dropnote">PDF only · max 10&nbsp;MB · text-based (not a scan)</div>
+          </div>
+          <div id="dropBusy" class="hide"><span class="spinner show" style="justify-content:center"><i></i> Reading your PDF…</span></div>
+          <div id="dropDone" class="hide">
+            <div class="dropicon" style="color:var(--accent)">✅</div>
+            <div id="dropFileName" style="font-weight:700"></div>
+            <div class="dropnote" id="dropChars"></div>
+            <button class="link" id="changeFileBtn" type="button">Choose a different file</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabpanel hide" id="tab-paste">
+        <textarea id="resumeTextIn" style="min-height:180px" placeholder="Paste or type your resume here — experience, skills, education…"></textarea>
+      </div>
+
+      <div class="row">
+        <button class="btn" id="startBtn">Start evaluation →</button>
+        <button class="link" id="exampleBtn">Load an example</button>
+      </div>
+      <div class="spinner" id="setupSpin"><i></i> Analyzing your profile, running the ATS check, and preparing questions…</div>
+    </section>
+
+    <!-- ===== SCREEN 2: ATS & RESUME REVIEW ===== -->
+    <section id="screen-ats" class="hide">
+      <h2 class="section">Resume &amp; ATS review</h2>
+      <p class="sub" id="atsSub">How your resume scores against this job — and exactly how to improve it.</p>
+
+      <div class="ats-top">
+        <div class="ring" id="atsRing"></div>
+        <div class="bars" id="atsBars"></div>
+      </div>
+
+      <div id="atsVerdict" class="callout"></div>
+
+      <h3 class="subsection">✅ Keywords you already match</h3>
+      <div class="chips" id="atsMatched"></div>
+
+      <h3 class="subsection">❌ Keywords missing for this job</h3>
+      <div class="chips" id="atsMissing"></div>
+
+      <div id="atsFormattingWrap">
+        <h3 class="subsection">⚠️ Formatting &amp; structure issues</h3>
+        <ul class="plainlist" id="atsFormatting"></ul>
+      </div>
+
+      <h3 class="subsection">✍️ Suggested rewrites</h3>
+      <div id="atsImprovements"></div>
+
+      <div id="atsSummaryWrap">
+        <h3 class="subsection">💼 Tailored professional summary</h3>
+        <div class="callout" id="atsSummary"></div>
+        <button class="ghost" id="copySummaryBtn" type="button">📋 Copy summary</button>
+      </div>
+
+      <div id="atsQuickWrap">
+        <h3 class="subsection">⚡ Quick wins</h3>
+        <ul class="plainlist" id="atsQuick"></ul>
+      </div>
+
+      <div class="row">
+        <button class="btn" id="atsContinueBtn">Continue to knowledge check →</button>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN 3: Q&A ===== -->
+    <section id="screen-qa" class="hide">
+      <h2 class="section">Knowledge check</h2>
+      <p class="sub">We spotted these gaps. Answer a few questions so we can measure them.</p>
+
+      <div id="gapSummary" class="callout"></div>
+      <div class="chips" id="gapChips"></div>
+
+      <div class="progress"><i id="qBar"></i></div>
+      <div class="qmeta" id="qMeta">Question 1 of 3</div>
+      <div class="qtext" id="qText"></div>
+      <textarea id="answer" placeholder="Type your answer in your own words…"></textarea>
+      <div class="row">
+        <button class="btn" id="answerBtn">Submit answer →</button>
+      </div>
+      <div class="feedback" id="qFeedback"></div>
+      <div class="spinner" id="qaSpin"><i></i> Grading your answer…</div>
+    </section>
+
+    <!-- ===== SCREEN 4: WRITING ===== -->
+    <section id="screen-writing" class="hide">
+      <h2 class="section">Scenario challenge</h2>
+      <p class="sub">One practical task tailored to your target role. Take your time.</p>
+      <div id="challenge" class="callout"></div>
+      <textarea id="submission" placeholder="Write your response here…" style="min-height:180px"></textarea>
+      <div class="row">
+        <button class="btn" id="submitWritingBtn">Submit &amp; finish →</button>
+      </div>
+      <div class="spinner" id="wSpin"><i></i> Scoring your submission…</div>
+    </section>
+
+    <!-- ===== SCREEN 5: PATHWAY ===== -->
+    <section id="screen-pathway" class="hide">
+      <h2 class="section">Your career pathway</h2>
+      <p class="sub">Personalized plan based on everything above.</p>
+      <div class="scorecards" id="scorecards"></div>
+      <div class="md" id="pathway"></div>
+
+      <div class="row">
+        <button class="btn" id="upgradeBtn">✨ Upgrade my resume for this job</button>
+        <button class="ghost" id="printBtn">🖨 Print / Save PDF</button>
+        <button class="link" id="restartBtn">↺ Start over</button>
+      </div>
+      <div class="spinner" id="upSpin"><i></i> Rewriting your resume for this job…</div>
+
+      <div id="upgradeWrap" class="hide">
+        <h3 class="subsection">📄 Your upgraded resume</h3>
+        <p class="sub">Rewritten for this job using only your real experience. Bracketed [placeholders] mark metrics for you to fill in before sending.</p>
+        <div class="resumebox md" id="upgradedResume"></div>
+        <div class="row">
+          <button class="ghost" id="copyResumeBtn">📋 Copy (Markdown)</button>
+          <button class="ghost" id="downloadResumeBtn">⬇ Download .md</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+const API = ""; // same origin
+let SID = null, qCount = 0, qTotal = 3;
+let resumeText = "";       // filled by PDF upload (or the example loader)
+let resumeMode = "upload"; // "upload" | "paste"
+
+const $ = id => document.getElementById(id);
+const show = el => el.classList.remove('hide');
+const hide = el => el.classList.add('hide');
+
+function setStep(n){
+  document.querySelectorAll('.steps .s').forEach(s=>{
+    const step = +s.dataset.step;
+    s.classList.toggle('active', step===n);
+    s.classList.toggle('done', step<n);
+  });
+}
+function banner(msg){ const b=$('banner'); if(!msg){b.classList.remove('show');return;} b.textContent=msg; b.classList.add('show'); }
+function spin(el,on){ el.classList.toggle('show',on); }
+
+async function api(path, body){
+  banner('');
+  const res = await fetch(API + path, {
+    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
+  });
+  const data = await res.json().catch(()=>({}));
+  if(!res.ok){
+    const d = data.detail;
+    throw new Error(typeof d==='string' ? d : (Array.isArray(d)? d.map(e=>e.msg).join('; ') : 'Request failed'));
+  }
+  return data;
+}
+
+/* ---------- Screen 1: resume input (tabs) ---------- */
+function setResumeTab(mode){
+  resumeMode = mode;
+  $('tabUploadBtn').classList.toggle('on', mode==='upload');
+  $('tabPasteBtn').classList.toggle('on', mode==='paste');
+  $('tab-upload').classList.toggle('hide', mode!=='upload');
+  $('tab-paste').classList.toggle('hide', mode!=='paste');
+}
+$('tabUploadBtn').onclick = ()=>setResumeTab('upload');
+$('tabPasteBtn').onclick = ()=>setResumeTab('paste');
+
+function dropState(which){
+  ['dropIdle','dropBusy','dropDone'].forEach(id=>$(id).classList.toggle('hide', id!==which));
+}
+async function uploadResume(fileList){
+  const file = fileList && fileList[0];
+  if(!file) return;
+  if(!/\.pdf$/i.test(file.name) && file.type!=='application/pdf'){
+    banner('Please upload a PDF file.'); return;
+  }
+  banner(''); dropState('dropBusy');
+  try{
+    const fd = new FormData(); fd.append('file', file);
+    const res = await fetch(API+'/api/v1/parse-resume',{method:'POST',body:fd});
+    const data = await res.json().catch(()=>({}));
+    if(!res.ok){ throw new Error(typeof data.detail==='string'?data.detail:'Could not read that PDF.'); }
+    resumeText = data.resume_text;
+    $('dropFileName').textContent = data.filename;
+    $('dropChars').textContent = `Extracted ${data.char_count.toLocaleString()} characters ✓`;
+    dropState('dropDone');
+  }catch(e){ banner(e.message); dropState('dropIdle'); resumeText=''; }
+}
+$('drop').addEventListener('click', e=>{ if(e.target.id!=='changeFileBtn') $('resumeFile').click(); });
+$('resumeFile').addEventListener('change', e=>uploadResume(e.target.files));
+$('changeFileBtn').addEventListener('click', e=>{ e.stopPropagation(); $('resumeFile').value=''; resumeText=''; dropState('dropIdle'); });
+['dragover','dragenter'].forEach(ev=>$('drop').addEventListener(ev,e=>{e.preventDefault();$('drop').classList.add('over');}));
+['dragleave','drop'].forEach(ev=>$('drop').addEventListener(ev,e=>{e.preventDefault();$('drop').classList.remove('over');}));
+$('drop').addEventListener('drop', e=>{ if(e.dataTransfer.files.length) uploadResume(e.dataTransfer.files); });
+
+/* ---------- Screen 1: job description PDF upload ---------- */
+const JD_IDLE_HTML = '📎 <b>Upload the job posting PDF</b> — or drag &amp; drop it here (fills the box above)';
+async function uploadJD(fileList){
+  const file = fileList && fileList[0];
+  if(!file) return;
+  if(!/\.pdf$/i.test(file.name) && file.type!=='application/pdf'){
+    banner('Please upload a PDF file.'); return;
+  }
+  banner('');
+  $('jdDropText').innerHTML = '<span class="spinner show" style="margin:0"><i></i> Reading the job posting…</span>';
+  try{
+    const fd = new FormData(); fd.append('file', file);
+    const res = await fetch(API+'/api/v1/parse-resume',{method:'POST',body:fd});
+    const data = await res.json().catch(()=>({}));
+    if(!res.ok){ throw new Error(typeof data.detail==='string'?data.detail:'Could not read that PDF.'); }
+    $('jd').value = data.resume_text; // generic PDF-to-text; field name is historical
+    $('jdDropText').innerHTML = `✅ <b>${escapeHtml(data.filename)}</b> loaded — review or edit the text above`;
+  }catch(e){
+    banner(e.message);
+    $('jdDropText').innerHTML = JD_IDLE_HTML;
+  }
+}
+$('jdDrop').addEventListener('click', ()=>$('jdFile').click());
+$('jdFile').addEventListener('change', e=>uploadJD(e.target.files));
+['dragover','dragenter'].forEach(ev=>$('jdDrop').addEventListener(ev,e=>{e.preventDefault();$('jdDrop').classList.add('over');}));
+['dragleave','drop'].forEach(ev=>$('jdDrop').addEventListener(ev,e=>{e.preventDefault();$('jdDrop').classList.remove('over');}));
+$('jdDrop').addEventListener('drop', e=>{ if(e.dataTransfer.files.length) uploadJD(e.dataTransfer.files); });
+
+$('exampleBtn').onclick = () => {
+  $('role').value = "Machine Learning Engineer";
+  $('jd').value = "Design, train and deploy ML models in production. Required: Python, PyTorch, Docker, Kubernetes, MLOps (CI/CD, model monitoring) and AWS. Must have experience serving models at scale.";
+  setResumeTab('paste');
+  $('resumeTextIn').value = "4 years as a Python backend developer building REST APIs with Flask. Strong in PostgreSQL and Git. Some pandas exposure. No cloud, container, or machine-learning experience yet.";
+};
+
+function currentResume(){
+  if(resumeMode==='paste') return $('resumeTextIn').value.trim();
+  return resumeText;
+}
+
+$('startBtn').onclick = async () => {
+  const role=$('role').value.trim(), jd=$('jd').value.trim();
+  if(!role){ banner('Please fill in the target role.'); return; }
+  const resume = currentResume();
+  if(!resume){
+    banner(resumeMode==='paste'
+      ? 'Please type or paste your resume first.'
+      : 'Please upload your resume PDF first (or switch to “Type / paste text”).');
+    return;
+  }
+  $('startBtn').disabled=true; spin($('setupSpin'),true);
+  try{
+    const d = await api('/api/v1/start-evaluation',{resume_text:resume,job_description:jd,target_role:role});
+    SID = d.session_id;
+    renderGaps(d.gap_analysis);
+    qTotal = 3; qCount = 0;
+    showQuestion(d.first_question);
+    hide($('screen-setup'));
+    if(d.ats_report){
+      renderATS(d.ats_report, !!jd);
+      show($('screen-ats')); setStep(2);
+    }else{
+      // ATS review unavailable — go straight to the knowledge check.
+      show($('screen-qa')); setStep(3);
+    }
+    window.scrollTo({top:0,behavior:'smooth'});
+  }catch(e){ banner(e.message); }
+  finally{ $('startBtn').disabled=false; spin($('setupSpin'),false); }
+};
+
+function renderGaps(g){
+  $('gapSummary').textContent = g.summary || '';
+  const chips = $('gapChips'); chips.innerHTML='';
+  (g.matched_strengths||[]).slice(0,4).forEach(s=>{
+    chips.insertAdjacentHTML('beforeend', `<span class="chip str">✓ ${escapeHtml(s)}</span>`);
+  });
+  (g.gaps||[]).forEach(gap=>{
+    const cls = gap.severity>=4?'crit':(gap.severity===3?'warn':'ok');
+    chips.insertAdjacentHTML('beforeend',
+      `<span class="chip ${cls}">${escapeHtml(gap.skill)} <span class="sev">${gap.severity}/5</span></span>`);
+  });
+}
+
+/* ---------- Screen 2: ATS & resume review ---------- */
+function scoreColor(n){ return n>=75?'#22c55e':(n>=50?'#f59e0b':'#ef4444'); }
+
+function renderRing(score){
+  const r=56, c=2*Math.PI*r, off=c*(1-score/100), col=scoreColor(score);
+  $('atsRing').innerHTML =
+    `<svg width="132" height="132" viewBox="0 0 132 132">
+       <circle cx="66" cy="66" r="${r}" fill="none" stroke="var(--line)" stroke-width="11"/>
+       <circle cx="66" cy="66" r="${r}" fill="none" stroke="${col}" stroke-width="11"
+         stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}"/>
+     </svg>
+     <div class="val"><div><b style="color:${col}">${score}</b><br><span>ATS SCORE /100</span></div></div>`;
+}
+
+function renderATS(a, hasJD){
+  $('atsSub').textContent = hasJD
+    ? 'How your resume scores against this job posting — and exactly how to improve it.'
+    : 'No job description given, so this scores your resume against typical postings for the role.';
+  renderRing(a.ats_score||0);
+
+  const sub = a.subscores||{};
+  const rows = [
+    ['Keywords', sub.keyword_match], ['Formatting', sub.formatting],
+    ['Impact', sub.impact], ['Relevance', sub.relevance]
+  ];
+  $('atsBars').innerHTML = rows.map(([l,v])=>{
+    v = v==null?0:v;
+    return `<div class="brow"><span class="bl">${l}</span>
+      <span class="bt"><i style="width:${v}%;background:${scoreColor(v)}"></i></span>
+      <span class="bn">${v}</span></div>`;
+  }).join('');
+
+  $('atsVerdict').textContent = a.verdict || '';
+
+  const matched=$('atsMatched'); matched.innerHTML='';
+  (a.matched_keywords||[]).forEach(k=>matched.insertAdjacentHTML('beforeend',
+    `<span class="chip ok">✓ ${escapeHtml(k)}</span>`));
+  if(!(a.matched_keywords||[]).length) matched.innerHTML='<span class="sub">None detected.</span>';
+
+  const missing=$('atsMissing'); missing.innerHTML='';
+  (a.missing_keywords||[]).forEach(k=>missing.insertAdjacentHTML('beforeend',
+    `<span class="chip crit">${escapeHtml(k)}</span>`));
+  if(!(a.missing_keywords||[]).length) missing.innerHTML='<span class="sub">Nothing important is missing — nice.</span>';
+
+  const fmt=(a.formatting_issues||[]);
+  $('atsFormattingWrap').classList.toggle('hide', !fmt.length);
+  $('atsFormatting').innerHTML = fmt.map(f=>`<li>${escapeHtml(f)}</li>`).join('');
+
+  $('atsImprovements').innerHTML = (a.improvements||[]).map(im=>
+    `<div class="impv">
+       <div class="where">${escapeHtml(im.section||'Resume')}</div>
+       <div class="blk before"><span class="tag">Before</span>${escapeHtml(im.original||'')}</div>
+       <div class="blk after"><span class="tag">After</span>${escapeHtml(im.improved||'')}</div>
+       <div class="why">💡 ${escapeHtml(im.why||'')}</div>
+     </div>`).join('') || '<p class="sub">No rewrites suggested.</p>';
+
+  $('atsSummaryWrap').classList.toggle('hide', !a.improved_summary);
+  $('atsSummary').textContent = a.improved_summary||'';
+
+  $('atsQuickWrap').classList.toggle('hide', !(a.quick_wins||[]).length);
+  $('atsQuick').innerHTML = (a.quick_wins||[]).map(q=>`<li>${escapeHtml(q)}</li>`).join('');
+}
+
+$('copySummaryBtn').onclick = async () => {
+  try{
+    await navigator.clipboard.writeText($('atsSummary').textContent);
+    $('copySummaryBtn').textContent = '✅ Copied!';
+    setTimeout(()=>{ $('copySummaryBtn').textContent = '📋 Copy summary'; }, 1500);
+  }catch(e){ banner('Could not copy to clipboard.'); }
+};
+
+$('atsContinueBtn').onclick = () => {
+  hide($('screen-ats')); show($('screen-qa')); setStep(3);
+  window.scrollTo({top:0,behavior:'smooth'});
+  $('answer').focus();
+};
+
+/* ---------- Screen 3: Q&A ---------- */
+function showQuestion(q){
+  qCount++;
+  $('qMeta').textContent = `Question ${qCount} of ${qTotal}`;
+  $('qText').textContent = q.text;
+  $('qBar').style.width = ((qCount-1)/qTotal*100)+'%';
+  $('answer').value='';
+  $('qFeedback').classList.remove('show');
+}
+
+$('answerBtn').onclick = async () => {
+  const ans = $('answer').value.trim();
+  if(!ans){ banner('Please type an answer first.'); return; }
+  $('answerBtn').disabled=true; spin($('qaSpin'),true);
+  try{
+    const d = await api('/api/v1/submit-answer',{session_id:SID, answer:ans});
+    const fb=$('qFeedback');
+    if(d.last_answer_score!=null){
+      const col = d.last_answer_score>=70?'#f0fdf4':(d.last_answer_score>=40?'#fffbeb':'#fef2f2');
+      const bd  = d.last_answer_score>=70?'#bbf7d0':(d.last_answer_score>=40?'#fde68a':'#fecaca');
+      fb.style.background=col; fb.style.border='1px solid '+bd;
+      fb.innerHTML = `<span class="score">Score: ${d.last_answer_score}/100</span><br>${escapeHtml(d.last_answer_feedback||'')}`;
+      fb.classList.add('show');
+    }
+    if(d.phase==='writing'){
+      $('qBar').style.width='100%';
+      setTimeout(()=>{ startWriting(d.writing_challenge); }, 900);
+    }else if(d.next_question){
+      setTimeout(()=>showQuestion(d.next_question), 900);
+    }
+  }catch(e){ banner(e.message); }
+  finally{ $('answerBtn').disabled=false; spin($('qaSpin'),false); }
+};
+
+/* ---------- Screen 4: Writing ---------- */
+function startWriting(ch){
+  const crit = (ch.evaluation_criteria||[]).map(c=>`<li>${escapeHtml(c)}</li>`).join('');
+  $('challenge').innerHTML = `${escapeHtml(ch.prompt)}${crit?`<div style="margin-top:10px"><b>You'll be scored on:</b><ul style="margin:6px 0 0">${crit}</ul></div>`:''}`;
+  hide($('screen-qa')); show($('screen-writing')); setStep(4);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+$('submitWritingBtn').onclick = async () => {
+  const sub=$('submission').value.trim();
+  if(!sub){ banner('Please write a response first.'); return; }
+  $('submitWritingBtn').disabled=true; spin($('wSpin'),true);
+  try{
+    await api('/api/v1/submit-answer',{session_id:SID, answer:sub});
+    const p = await api('/api/v1/final-pathway',{session_id:SID});
+    renderPathway(p);
+    hide($('screen-writing')); show($('screen-pathway')); setStep(5);
+    window.scrollTo({top:0,behavior:'smooth'});
+  }catch(e){ banner(e.message); }
+  finally{ $('submitWritingBtn').disabled=false; spin($('wSpin'),false); }
+};
+
+/* ---------- Screen 5: Pathway ---------- */
+function renderPathway(p){
+  $('scorecards').innerHTML =
+    `<div class="sc"><div class="n">${p.ats_score ?? '—'}</div><div class="l">ATS score /100</div></div>`+
+    `<div class="sc"><div class="n">${p.verbal_average}</div><div class="l">Knowledge round /100</div></div>`+
+    `<div class="sc"><div class="n">${p.writing_score ?? '—'}</div><div class="l">Scenario /100</div></div>`;
+  $('pathway').innerHTML = mdToHtml(p.pathway_markdown||'');
+}
+$('printBtn').onclick = ()=>window.print();
+$('restartBtn').onclick = ()=>location.reload();
+
+/* ---------- Resume upgrade service ---------- */
+let upgradedMd = "";
+$('upgradeBtn').onclick = async () => {
+  $('upgradeBtn').disabled=true; spin($('upSpin'),true);
+  try{
+    const d = await api('/api/v1/upgrade-resume',{session_id:SID});
+    upgradedMd = d.resume_markdown || '';
+    $('upgradedResume').innerHTML = mdToHtml(upgradedMd);
+    show($('upgradeWrap'));
+    $('upgradeBtn').textContent = '✅ Resume upgraded';
+    $('upgradeWrap').scrollIntoView({behavior:'smooth'});
+  }catch(e){ banner(e.message); $('upgradeBtn').disabled=false; }
+  finally{ spin($('upSpin'),false); }
+};
+$('copyResumeBtn').onclick = async () => {
+  try{
+    await navigator.clipboard.writeText(upgradedMd);
+    $('copyResumeBtn').textContent = '✅ Copied!';
+    setTimeout(()=>{ $('copyResumeBtn').textContent = '📋 Copy (Markdown)'; }, 1500);
+  }catch(e){ banner('Could not copy to clipboard.'); }
+};
+$('downloadResumeBtn').onclick = () => {
+  const blob = new Blob([upgradedMd], {type:'text/markdown'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'upgraded_resume.md';
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+/* ---------- tiny markdown renderer ---------- */
+function escapeHtml(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function inline(s){
+  return escapeHtml(s)
+    .replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+}
+function mdToHtml(md){
+  const lines = md.replace(/\r/g,'').split('\n');
+  let html='', i=0;
+  while(i<lines.length){
+    let ln = lines[i];
+    if(/^\s*$/.test(ln)){ i++; continue; }
+    // table
+    if(ln.includes('|') && i+1<lines.length && /^\s*\|?[\s:-]+\|/.test(lines[i+1])){
+      const head = ln.split('|').map(c=>c.trim()).filter(c=>c!=='');
+      i+=2; let rows=[];
+      while(i<lines.length && lines[i].includes('|')){
+        rows.push(lines[i].split('|').map(c=>c.trim()).filter((c,idx,a)=>!(idx===0&&c==='')&&!(idx===a.length-1&&c==='')));
+        i++;
+      }
+      html+='<table><thead><tr>'+head.map(h=>`<th>${inline(h)}</th>`).join('')+'</tr></thead><tbody>'+
+        rows.map(r=>'<tr>'+r.map(c=>`<td>${inline(c)}</td>`).join('')+'</tr>').join('')+'</tbody></table>';
+      continue;
+    }
+    // headings
+    let m;
+    if(m=ln.match(/^###\s+(.*)/)){ html+=`<h3>${inline(m[1])}</h3>`; i++; continue; }
+    if(m=ln.match(/^##\s+(.*)/)){ html+=`<h2>${inline(m[1])}</h2>`; i++; continue; }
+    if(m=ln.match(/^#\s+(.*)/)){ html+=`<h2>${inline(m[1])}</h2>`; i++; continue; }
+    // list block
+    if(/^\s*[-*]\s+/.test(ln)){
+      const checkbox = /^\s*[-*]\s+\[[ x]\]/.test(ln);
+      html += `<ul class="${checkbox?'chk':''}">`;
+      while(i<lines.length && /^\s*[-*]\s+/.test(lines[i])){
+        let item = lines[i].replace(/^\s*[-*]\s+/,'').replace(/^\[[ x]\]\s*/,'');
+        html += `<li>${inline(item)}</li>`; i++;
+      }
+      html+='</ul>'; continue;
+    }
+    // paragraph
+    html += `<p>${inline(ln)}</p>`; i++;
+  }
+  return html;
+}
+
+setStep(1);
+</script>
+</body>
+</html>

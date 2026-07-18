@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDURev Advisor — Staff Console</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+<style>
+  :root{
+    --bg:#0a1626; --bg2:#0e1d33; --bg3:#142743; --line:rgba(255,255,255,.08);
+    --txt:#f3f6fb; --mut:#a7b6c9; --dim:#6d7f95;
+    --orange:#f26522; --orange2:#ff8a3d; --amber:#fbb040;
+    --green:#22c55e; --red:#ef4444; --yellow:#eab308;
+    --grad:linear-gradient(135deg,#f26522,#ff8a3d);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.5}
+  a{color:var(--amber)}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:16px 24px;border-bottom:1px solid var(--line);background:var(--bg2);position:sticky;top:0;z-index:5}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:40px;height:40px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:20px}
+  .brand h1{font-size:1.1rem}
+  .brand p{font-size:.75rem;color:var(--mut)}
+  .wrap{padding:24px;max-width:1200px;margin:0 auto}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;margin-bottom:22px}
+  .card{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .card .k{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--dim)}
+  .card .v{font-size:1.8rem;font-weight:700;margin-top:4px}
+  .card .v.accent{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+  .bar h2{font-size:1rem;margin-right:auto}
+  select,button{font-family:inherit;font-size:.85rem}
+  select{background:var(--bg3);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
+  .btn{border:1px solid var(--line);background:var(--bg3);color:var(--mut);border-radius:8px;padding:7px 12px;cursor:pointer;transition:.15s}
+  .btn:hover{color:#fff;border-color:var(--orange)}
+  .btn.g{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.4);color:#86efac}
+  .btn.r{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.4);color:#fca5a5}
+  .btn.y{background:rgba(234,179,8,.13);border-color:rgba(234,179,8,.4);color:#fde047}
+  table{width:100%;border-collapse:collapse;background:var(--bg2);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);font-size:.85rem;vertical-align:top}
+  th{background:var(--bg3);color:var(--mut);font-size:.72rem;text-transform:uppercase;letter-spacing:.04em}
+  tr:last-child td{border-bottom:none}
+  .ref{font-family:monospace;color:var(--amber);cursor:pointer}
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.72rem;font-weight:600;white-space:nowrap}
+  .p-approve,.p-auto_approved,.p-approved{background:rgba(34,197,94,.16);color:#86efac}
+  .p-reject,.p-auto_rejected,.p-rejected{background:rgba(239,68,68,.16);color:#fca5a5}
+  .p-escalate,.p-pending{background:rgba(234,179,8,.14);color:#fde047}
+  .risk-high{color:#fca5a5;font-weight:700}
+  .risk-medium{color:#fdba74}
+  .risk-low{color:#fde047}
+  .risk-none{color:var(--dim)}
+  .muted{color:var(--dim);font-size:.78rem}
+  .evidence{background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:12px;margin-top:6px;font-size:.8rem}
+  .evidence h4{font-size:.72rem;text-transform:uppercase;color:var(--amber);margin:8px 0 4px;letter-spacing:.04em}
+  .evidence h4:first-child{margin-top:0}
+  .chk{display:flex;gap:8px;align-items:center}
+  .ok{color:#86efac}.no{color:#fca5a5}
+  .actions{display:flex;gap:6px;flex-wrap:wrap}
+  .empty{padding:40px;text-align:center;color:var(--dim)}
+  .toast{position:fixed;bottom:20px;right:20px;background:var(--bg3);border:1px solid var(--orange);border-radius:10px;padding:12px 16px;font-size:.85rem;opacity:0;transform:translateY(10px);transition:.25s;z-index:20}
+  .toast.show{opacity:1;transform:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">🛡️</div>
+    <div><h1>EDURev Advisor — Staff Console</h1><p>EDU Revolution 2.0 · automated review & analytics</p></div>
+  </div>
+  <a href="/">← Student app</a>
+</header>
+
+<div class="wrap">
+  <div class="cards" id="cards"></div>
+
+  <div class="bar">
+    <h2>Review queue</h2>
+    <label class="muted">Status
+      <select id="statusFilter">
+        <option value="">All</option>
+        <option value="pending_school_coordinator">Pending — Coordinator</option>
+        <option value="pending_standing_committee">Pending — Committee</option>
+        <option value="pending_registrar">Pending — Registrar</option>
+        <option value="auto_approved">Auto-approved</option>
+        <option value="auto_rejected">Auto-rejected</option>
+        <option value="approved">Approved</option>
+        <option value="rejected">Rejected</option>
+      </select>
+    </label>
+    <button class="btn" id="refresh">↻ Refresh</button>
+  </div>
+
+  <table>
+    <thead><tr>
+      <th>Ref</th><th>Student</th><th>Category → Benefit</th><th>AI decision</th>
+      <th>Fraud risk</th><th>Status / owner</th><th>SLA</th><th>Actions</th>
+    </tr></thead>
+    <tbody id="rows"><tr><td colspan="8" class="empty">Loading…</td></tr></tbody>
+  </table>
+
+  <div class="bar" style="margin-top:26px">
+    <h2>Proactive outreach <span class="muted" style="font-weight:400">— students who already clear benefit prerequisites</span></h2>
+    <button class="btn" id="refreshNudges">↻</button>
+  </div>
+  <table>
+    <thead><tr><th>Student</th><th>Program</th><th>CGPA</th><th>Attendance</th><th>Pathways cleared</th><th>Suggested benefits</th></tr></thead>
+    <tbody id="nudgeRows"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+  </table>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML;};
+let QUEUE=[];
+
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
+
+function pillClass(s){
+  if(!s)return'p-pending';
+  if(s.includes('approv'))return'p-auto_approved';
+  if(s.includes('reject'))return'p-auto_rejected';
+  return'p-pending';
+}
+function fmtDate(iso){try{return new Date(iso).toLocaleDateString();}catch(e){return iso||'';}}
+function slaCell(r){
+  if(!r.sla_due||r.status && (r.status.startsWith('auto_')||['approved','rejected'].includes(r.status)))
+    return '<span class="muted">—</span>';
+  const due=new Date(r.sla_due), now=new Date();
+  const days=Math.ceil((due-now)/86400000);
+  const cls=days<0?'risk-high':days<=1?'risk-medium':'muted';
+  return `<span class="${cls}">${days<0?`${-days}d overdue`:`${days}d left`}</span>`;
+}
+
+async function loadNudges(){
+  try{
+    const d=await (await fetch('/api/nudges')).json();
+    const tb=$('#nudgeRows');
+    const rows=(d.students||[]);
+    if(!rows.length){tb.innerHTML='<tr><td colspan="6" class="empty">No student directory loaded.</td></tr>';return;}
+    tb.innerHTML=rows.map(s=>`<tr>
+      <td>${esc(s.name)}<div class="muted">${esc(s.registration_id)}</div></td>
+      <td>${esc(s.program||'')}</td>
+      <td>${esc(s.cgpa)}</td>
+      <td>${esc(s.attendance_percent)}%</td>
+      <td>${esc(s.eligible_count)}</td>
+      <td class="muted">${(s.top||[]).map(esc).join(', ')||'—'}</td>
+    </tr>`).join('');
+  }catch(e){ $('#nudgeRows').innerHTML='<tr><td colspan="6" class="empty">Nudges unavailable.</td></tr>'; }
+}
+
+async function loadAnalytics(){
+  const a=await (await fetch('/api/analytics')).json();
+  const byStatus=Object.entries(a.by_status||{}).map(([k,v])=>`${esc(k)}: ${v}`).join(' · ')||'—';
+  $('#cards').innerHTML=`
+    <div class="card"><div class="k">Total nominations</div><div class="v">${a.total}</div></div>
+    <div class="card"><div class="k">Auto-resolved</div><div class="v accent">${Math.round((a.auto_resolution_rate||0)*100)}%</div><div class="muted">${a.auto_resolved} of ${a.total}</div></div>
+    <div class="card"><div class="k">Fraud / duplicate flags</div><div class="v" style="color:var(--red)">${a.fraud_flags}</div></div>
+    <div class="card"><div class="k">Avg turnaround</div><div class="v">${a.avg_turnaround_days}<span style="font-size:.9rem;color:var(--dim)">d</span></div></div>
+    <div class="card" style="grid-column:1/-1"><div class="k">By status</div><div class="muted" style="margin-top:6px">${byStatus}</div></div>`;
+}
+
+async function loadQueue(){
+  const st=$('#statusFilter').value;
+  const url='/api/review/queue'+(st?`?status=${encodeURIComponent(st)}`:'');
+  const d=await (await fetch(url)).json();
+  QUEUE=d.queue||[];
+  const tb=$('#rows');
+  if(!QUEUE.length){tb.innerHTML='<tr><td colspan="8" class="empty">No nominations yet.</td></tr>';return;}
+  tb.innerHTML=QUEUE.map((r,i)=>{
+    const dec=r.decision||{}, dup=r.duplicate_check||{};
+    const decLabel=(dec.outcome||'').replace('_',' ');
+    const done=r.status&&(r.status.startsWith('auto_')||['approved','rejected'].includes(r.status));
+    return `<tr>
+      <td><span class="ref" data-i="${i}" title="Show evidence">${esc(r.reference_id)}</span></td>
+      <td>${esc(r.student_name)}<div class="muted">${esc(r.registration_id)}</div></td>
+      <td>${esc(r.initiative_label||r.initiative)}<div class="muted">→ ${esc(r.academic_benefit_label||r.academic_benefit)}</div></td>
+      <td><span class="pill p-${esc(dec.outcome)}">${esc(decLabel)}</span><div class="muted">conf ${dec.confidence??'—'}</div></td>
+      <td class="risk-${esc(dup.risk||'none')}">${esc((dup.risk||'none').toUpperCase())}</td>
+      <td><span class="pill ${pillClass(r.status)}">${esc((r.status||'').replace(/_/g,' '))}</span><div class="muted">${esc(r.current_owner_label||'')}</div></td>
+      <td>${slaCell(r)}</td>
+      <td><div class="actions">
+        ${done?'<span class="muted">closed</span>':`
+        <button class="btn g" data-act="approve" data-ref="${esc(r.reference_id)}">Approve</button>
+        <button class="btn r" data-act="reject" data-ref="${esc(r.reference_id)}">Reject</button>
+        <button class="btn y" data-act="escalate" data-ref="${esc(r.reference_id)}">Escalate</button>`}
+      </div></td>
+    </tr>
+    <tr id="ev-${i}" style="display:none"><td colspan="8">${evidence(r)}</td></tr>`;
+  }).join('');
+
+  tb.querySelectorAll('.ref').forEach(el=>el.onclick=()=>{
+    const row=$('#ev-'+el.dataset.i);row.style.display=row.style.display==='none'?'table-row':'none';});
+  tb.querySelectorAll('button[data-act]').forEach(b=>b.onclick=()=>act(b.dataset.ref,b.dataset.act));
+}
+
+function evidence(r){
+  const re=r.rule_eval||{}, v=r.verification||{}, dup=r.duplicate_check||{}, dec=r.decision||{};
+  const checks=(re.checks||[]).map(c=>`<div class="chk"><span class="${c.passed?'ok':'no'}">${c.passed?'✓':'✗'}</span> ${esc(c.name)} — need ${esc(c.required)}, got ${esc(c.actual??'—')}</div>`).join('')||'<div class="muted">no objective checks</div>';
+  const reqProofs=(re.required_proofs||[]).map(p=>`<li>${esc(p)}</li>`).join('');
+  const vchecks=(v.checks||[]).map(c=>`<div class="chk">🔎 <b>${esc(c.type)}</b> ${esc(c.value)} <span class="muted">→ ${esc(c.status)} (${esc(c.source)})</span></div>`).join('')||`<div class="muted">${esc((v.notes||[])[0]||'no identifiers')}</div>`;
+  const proofs=(r.proof_files||[]).map(p=>`<div class="chk">📄 <a href="/api/proofs/${encodeURIComponent(p.proof_id)}" target="_blank" rel="noopener">${esc(p.filename)}</a> <span class="muted">${Math.round((p.size_bytes||0)/1024)}KB · sha256 ${esc((p.sha256||'').slice(0,12))}…${p.extracted_chars?' · text read':''}</span></div>`).join('')||'<div class="muted">no documents attached</div>';
+  const dupTxt=(dup.reasons||[]).map(x=>`<div>• ${esc(x)}</div>`).join('')||'<div class="muted">no matches</div>';
+  const log=(r.decision_log||[]).map(l=>`<div>• <b>${esc(l.actor)}</b> — ${esc(l.action)} ${l.to_label?'→ '+esc(l.to_label):''} <span class="muted">${fmtDate(l.at)}</span>${l.reason?'<br><span class="muted">'+esc(l.reason)+'</span>':''}</div>`).join('');
+  const src = r.data_source==='college_records'
+    ? `<span class="ok">official college records</span>${r.identity_verified?' · identity verified':''}`
+    : '<span class="muted">self-reported (not in directory)</span>';
+  const mismatch=(r.data_mismatch||[]).length
+    ? `<div class="risk-high">⚠ Data mismatch: ${(r.data_mismatch||[]).map(esc).join('; ')}</div>` : '';
+  return `<div class="evidence">
+    <h4>Applicant data</h4><div>CGPA ${esc(r.cgpa)} · attendance ${esc(r.attendance_percent)}% — ${src}</div>${mismatch}
+    <h4>Decision</h4><div>${esc(dec.reason||'')} <span class="muted">(rule ${esc(re.rule_version||'')}, id ${esc(re.rule_id||'n/a')})</span></div>
+    <h4>Rule checks</h4>${checks}
+    ${reqProofs?`<h4>Required proofs</h4><ul style="margin-left:16px">${reqProofs}</ul>`:''}
+    <h4>Attached documents</h4>${proofs}
+    <h4>Proof verification</h4>${vchecks}
+    <h4>Duplicate / fraud</h4>${dupTxt}
+    <h4>Audit trail</h4>${log}
+  </div>`;
+}
+
+async function act(ref,action){
+  let note='', to=null;
+  if(action==='escalate'){to=prompt('Escalate to (school_coordinator / standing_committee / registrar):','standing_committee');if(!to)return;}
+  note=prompt(`Note for "${action}" on ${ref}:`,'')||'';
+  const actor=localStorage.getItem('reviewer')||'Reviewer';
+  const res=await fetch(`/api/review/${encodeURIComponent(ref)}/decision`,{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({actor,action,note,to})});
+  if(res.ok){toast(`${ref}: ${action} recorded`);await refresh();}
+  else{const e=await res.json().catch(()=>({}));toast('Error: '+(e.detail||res.status));}
+}
+
+async function refresh(){await Promise.all([loadAnalytics(),loadQueue(),loadNudges()]);}
+$('#refresh').onclick=refresh;
+$('#refreshNudges').onclick=loadNudges;
+$('#statusFilter').onchange=loadQueue;
+refresh();
+</script>
+</body>
+</html>
